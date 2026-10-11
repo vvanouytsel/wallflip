@@ -42,11 +42,13 @@
     },
     "nsis": {
       "artifactName": "Wallflip-Setup.${ext}",
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "createDesktopShortcut": true,
+      "createDesktopShortcut": false,
       "createStartMenuShortcut": true,
-      "shortcutName": "Wallflip"
+      "shortcutName": "Wallflip",
+      "allowToChangeInstallationDirectory": true,
+      "include": "build/installer.nsh"
     },
     "mac": {
       "target": "dmg",
