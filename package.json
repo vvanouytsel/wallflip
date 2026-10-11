@@ -1,0 +1,62 @@
+{
+  "name": "wallflip",
+  "productName": "Wallflip",
+  "version": "0.0.0",
+  "description": "Find wallpapers that fit your screens and set them with one click",
+  "author": "vvanouytsel",
+  "homepage": "https://github.com/vvanouytsel/wallflip",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "screenshots": "electron . --screenshots",
+    "icon": "electron scripts/make-icon.js",
+    "check": "node scripts/check.js",
+    "dist": "electron-builder --publish never"
+  },
+  "dependencies": {
+    "wallpaper": "^7.3.1"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "io.github.vvanouytsel.wallflip",
+    "productName": "Wallflip",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**",
+      "renderer/**",
+      "assets/**",
+      "scripts/set-wallpaper.ps1"
+    ],
+    "asarUnpack": [
+      "scripts/set-wallpaper.ps1",
+      "node_modules/wallpaper/source/**"
+    ],
+    "icon": "assets/icon.png",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "artifactName": "Wallflip-Setup.${ext}",
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Wallflip"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.utilities",
+      "artifactName": "Wallflip-mac.${ext}"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Utility",
+      "artifactName": "Wallflip-linux.${ext}"
+    }
+  }
+}

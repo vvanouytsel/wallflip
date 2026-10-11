@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://*.wallhaven.cc data:; style-src 'self'">
+  <title>Wallflip</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="glow"></div>
+
+  <header class="appbar">
+    <div class="container topbar">
+      <div class="brand"><img class="logo" src="../assets/logo.svg" alt=""><span>Wallflip</span></div>
+      <nav class="tabs">
+        <button id="tabDiscover" type="button" class="on">Discover</button>
+        <button id="tabFavorites" type="button">Favorites</button>
+        <button id="tabRotations" type="button">Rotations</button>
+        <button id="tabHistory" type="button">History</button>
+      </nav>
+      <button id="identify" type="button" class="btn ghost">
+        <svg viewBox="0 0 24 24" class="icon"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        Identify monitors
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="discoverBar" class="toolbar">
+      <form id="searchForm" class="search">
+        <svg viewBox="0 0 24 24" class="icon"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="query" type="search" placeholder="Search for a theme: forest, space, city..." autofocus>
+        <button type="submit" class="btn primary">Search</button>
+      </form>
+
+      <div class="filters">
+        <div class="field">
+          <span class="label">Fit to</span>
+          <div id="monitors" class="segmented"></div>
+        </div>
+        <div class="field">
+          <span class="label">Sort</span>
+          <select id="sorting" class="btn ghost">
+            <option value="toplist">Top this year</option>
+            <option value="relevance">Best match</option>
+            <option value="date_added">Newest</option>
+            <option value="views">Most viewed</option>
+            <option value="favorites">Most favorited</option>
+            <option value="random">Random</option>
+          </select>
+          <button id="shuffle" type="button" class="btn ghost">
+            <svg viewBox="0 0 24 24" class="icon"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            Shuffle
+          </button>
+        </div>
+        <label class="switch"><input id="matchShape" type="checkbox" checked><span class="track"></span>Fit my screen shape</label>
+      </div>
+
+      <div id="chips" class="chips"></div>
+
+      <div id="similar" class="similar" hidden>
+        <img id="similarThumb" alt="">
+        <span>Showing wallpapers similar to this one</span>
+        <button id="similarClear" type="button" class="btn ghost small">Back to search</button>
+      </div>
+    </div>
+
+    <section id="discover">
+      <div id="grid" class="grid"></div>
+      <div id="feedEmpty" class="empty" hidden>
+        <div class="emptyIcon"><svg viewBox="0 0 24 24" class="icon"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+        <h3>No wallpapers found</h3>
+        <p>Try a different word, or turn off "Fit my screen shape" to see more.</p>
+      </div>
+      <div id="sentinel"></div>
+      <p id="feedStatus" class="feedStatus"></p>
+    </section>
+
+    <section id="favoritesView" hidden>
+      <div class="pageHead">
+        <div>
+          <h2>Favorites</h2>
+          <p class="subtle">Wallpapers you liked. Press F or the heart in the preview to add one.</p>
+        </div>
+      </div>
+      <div id="favGrid" class="grid"></div>
+      <div id="favEmpty" class="empty" hidden>
+        <div class="emptyIcon"><svg viewBox="0 0 24 24" class="icon"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></div>
+        <h3>No favorites yet</h3>
+        <p>Open any wallpaper and tap the heart to keep it here.</p>
+      </div>
+    </section>
+
+    <section id="rotationsView" hidden>
+      <div id="rotList">
+        <div class="pageHead">
+          <div>
+            <h2>Rotations</h2>
+            <p class="subtle">Pick some wallpapers and Wallflip changes them for you on a schedule.</p>
+          </div>
+          <button id="newRotation" type="button" class="btn primary">+ New rotation</button>
+        </div>
+
+        <div id="rotCards" class="rotCards"></div>
+
+        <div id="rotEmpty" class="empty" hidden>
+          <div class="emptyIcon"><svg viewBox="0 0 24 24" class="icon"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></div>
+          <h3>No rotations yet</h3>
+          <p>Create a rotation, add a few wallpapers, and choose how often they change.</p>
+          <button id="emptyNew" type="button" class="btn primary">Create your first rotation</button>
+        </div>
+
+        <label class="switch settingRow"><input id="background" type="checkbox"><span class="track"></span>
+          <span>
+            <span class="settingTitle">Start with my computer and keep running in the tray</span>
+            <span class="subtle">Needed for rotations to keep changing while the window is closed.</span>
+          </span>
+        </label>
+      </div>
+
+      <div id="rotEditor" hidden>
+        <div class="pageHead">
+          <div class="editorTitle">
+            <button id="rotBack" type="button" class="btn ghost iconOnly" title="Back">
+              <svg viewBox="0 0 24 24" class="icon"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <input id="rotName" class="nameInput" type="text" placeholder="Name your rotation" maxlength="40">
+          </div>
+        </div>
+
+        <div class="editorGrid">
+          <div class="step wide">
+            <div class="stepHead"><span class="num">1</span><h3>Wallpapers</h3><span id="rotCount" class="subtle"></span></div>
+            <div id="rotImages" class="thumbs"></div>
+            <p id="rotHint" class="subtle"></p>
+            <div id="rotPickWrap" hidden>
+              <div class="pickHead">
+                <span class="label">Add from</span>
+                <div id="rotSource" class="segmented small">
+                  <button type="button" data-source="favorites">Favorites</button>
+                  <button type="button" data-source="history">History</button>
+                </div>
+              </div>
+              <div id="rotPick" class="thumbs small"></div>
+            </div>
+          </div>
+
+          <div id="rotWhere" class="step">
+            <div class="stepHead"><span class="num">2</span><h3>Where</h3></div>
+            <div id="rotTargets" class="segmented"></div>
+          </div>
+
+          <div class="step">
+            <div class="stepHead"><span class="num" id="whenNum">3</span><h3>When</h3></div>
+            <div id="rotMode" class="segmented">
+              <button type="button" data-mode="interval">Every so often</button>
+              <button type="button" data-mode="daily">Once a day</button>
+            </div>
+            <div id="rotInterval" class="stack">
+              <div id="rotPresets" class="chips"></div>
+              <div class="custom">
+                <span class="subtle">or every</span>
+                <input id="rotAmount" type="number" min="1" max="999" class="input">
+                <select id="rotUnit" class="btn ghost">
+                  <option value="1">minutes</option>
+                  <option value="60">hours</option>
+                  <option value="1440">days</option>
+                </select>
+              </div>
+            </div>
+            <div id="rotDaily" class="custom" hidden>
+              <span class="subtle">Change at</span>
+              <input id="rotTime" type="time" value="08:00" class="input">
+            </div>
+            <div class="field">
+              <span class="label">Order</span>
+              <div id="rotOrder" class="segmented">
+                <button type="button" data-order="shuffle">Shuffle</button>
+                <button type="button" data-order="ordered">In order</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="saveBar">
+          <span id="rotSummary" class="subtle"></span>
+          <button id="rotCancel" type="button" class="btn ghost">Cancel</button>
+          <button id="rotSave" type="button" class="btn primary">Save rotation</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="historyView" hidden>
+      <div class="pageHead">
+        <div>
+          <h2>History</h2>
+          <p class="subtle">Every wallpaper you set, newest first. Open one to set it again.</p>
+        </div>
+        <button id="clearHistory" type="button" class="btn ghost">Clear history</button>
+      </div>
+      <div id="historyGrid" class="grid"></div>
+      <div id="historyEmpty" class="empty" hidden>
+        <div class="emptyIcon"><svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div>
+        <h3>Nothing here yet</h3>
+        <p>Wallpapers you set will show up here.</p>
+      </div>
+    </section>
+  </main>
+
+  <button id="toTop" type="button" class="btn ghost toTop" title="Back to top" hidden>
+    <svg viewBox="0 0 24 24" class="icon"><path d="M6 15l6-6 6 6"/></svg>
+  </button>
+
+  <div id="modal" hidden>
+    <div class="viewer">
+      <div class="stage">
+        <img id="preview" alt="">
+        <button id="prev" type="button" class="nav prev" title="Previous (Left arrow)"><svg viewBox="0 0 24 24" class="icon"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button id="next" type="button" class="nav next" title="Next (Right arrow)"><svg viewBox="0 0 24 24" class="icon"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+
+      <aside class="side">
+        <div class="sideHead">
+          <div>
+            <div id="info" class="title"></div>
+            <div id="sub" class="subtle"></div>
+          </div>
+          <button id="close" type="button" class="btn ghost iconOnly" title="Close (Esc)">
+            <svg viewBox="0 0 24 24" class="icon"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+
+        <div class="block">
+          <span class="label">Set as wallpaper</span>
+          <div id="targets" class="targets"></div>
+        </div>
+
+        <div class="block">
+          <span class="label">Add to rotation</span>
+          <div id="addTo" class="tagList"></div>
+        </div>
+
+        <div class="actionRow">
+          <button id="fav" type="button" class="btn ghost">
+            <svg viewBox="0 0 24 24" class="icon"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>
+            <span id="favLabel">Favorite</span>
+          </button>
+          <button id="similarBtn" type="button" class="btn ghost">More like this</button>
+          <button id="openWeb" type="button" class="btn ghost">Open on Wallhaven</button>
+        </div>
+
+        <div class="block">
+          <span class="label">Tags</span>
+          <div id="tags" class="tagList"><span class="subtle">Loading...</span></div>
+        </div>
+
+        <div class="keys subtle" id="keys"></div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="toast" hidden></div>
+  <script src="app.js"></script>
+  <script src="discover.js"></script>
+  <script src="library.js"></script>
+  <script src="rotations.js"></script>
+</body>
+</html>

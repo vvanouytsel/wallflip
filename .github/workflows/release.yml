@@ -1,0 +1,62 @@
+name: Release
+
+# Every push to main updates the release pull request (next version + changelog).
+# Merging that pull request creates the GitHub release, and the build job attaches the installers.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+            file: dist/Wallflip-Setup.exe
+          - os: macos-latest
+            target: --mac
+            file: dist/Wallflip-mac.dmg
+          - os: ubuntu-latest
+            target: --linux
+            file: dist/Wallflip-linux.AppImage
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build installer
+        run: npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Attach to release
+        shell: bash
+        run: gh release upload "${{ needs.release-please.outputs.tag_name }}" "${{ matrix.file }}" --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
