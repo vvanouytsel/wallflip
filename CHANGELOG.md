@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/vvanouytsel/wallflip/compare/wallflip-v1.0.0...wallflip-v1.1.0) (2026-10-12)
+
+
+### Features
+
+* choose the install folder and desktop shortcut in the Windows installer ([#2](https://github.com/vvanouytsel/wallflip/issues/2)) ([52770b2](https://github.com/vvanouytsel/wallflip/commit/52770b24accdecacea96a8c67b97930b3b58478f))
+
+
+### Bug Fixes
+
+* make search and monitor detection work on Linux ([bb39e43](https://github.com/vvanouytsel/wallflip/commit/bb39e43c108865ebc5244b52c2f1b99641edc9ec))
+
 ## 1.0.0 (2026-10-11)
 
 
