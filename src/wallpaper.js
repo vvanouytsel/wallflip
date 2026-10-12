@@ -6,9 +6,21 @@ const path = require('node:path');
 const API = 'https://wallhaven.cc/api/v1/search';
 const HISTORY_LIMIT = 200;
 
+function toPixels(display) {
+  if (process.platform === 'win32') return screen.dipToScreenRect(null, display.bounds);
+  const { x, y, width, height } = display.bounds;
+  const scale = display.scaleFactor;
+  return {
+    x: Math.round(x * scale),
+    y: Math.round(y * scale),
+    width: Math.round(width * scale),
+    height: Math.round(height * scale),
+  };
+}
+
 function listDisplays() {
   return screen.getAllDisplays().map((d, index) => {
-    const px = screen.dipToScreenRect(null, d.bounds);
+    const px = toPixels(d);
     return {
       index,
       name: d.label || `Monitor ${index + 1}`,
