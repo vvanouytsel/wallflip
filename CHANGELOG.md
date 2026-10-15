@@ -10,7 +10,7 @@
 
 ### Bug Fixes
 
-* make search and monitor detection work on Linux ([bb39e43](https://github.com/vvanouytsel/wallflip/commit/bb39e43c108865ebc5244b52c2f1b99641edc9ec))
+* make search and monitor detection work on Linux ([d157e47](https://github.com/vvanouytsel/wallflip/commit/d157e471585c8da0a1b9d20b780ddc8de302bcc5))
 
 ## 1.0.0 (2026-10-11)
 
